@@ -16,9 +16,9 @@ page_header = """
     </style>
 </head>
 <body>
-    <h1>
-        <a href="/">Caesar - Rot13</a>
-    </h1>
+    <h3>
+        <a href="/">Text Rotating</a>
+    </h3>
 """
 
 # html boilerplate for the bottom of every page
@@ -27,31 +27,44 @@ page_footer = """
 </html>
 """
 
-
 class MainHandler(webapp2.RequestHandler):
 
     def get(self):
 
-        edit_header = "<h3>New Title Goes Here</h3>"
-
-        user_form="""
+        form="""
         <form method="post">
-            <textarea name="text" style="height: 50px; width: 200px;"></textarea>
+            <div>
+                <label for="rot">Rotate by:</label>
+                <input type="text" name="rot" value="0">
+            </div>
+            <textarea type="text" name="text" style="height: 50px; width: 200px;"></textarea>
             <br>
             <input type="submit">
         </form>
         """
 
-        main_content = edit_header + user_form
-        response = page_header + main_content + page_footer
+        response = page_header + form + page_footer
         self.response.write(response)
 
     def post(self):
 
         text_answer = self.request.get("text")
-        answer = encrypt(text_answer, 13)
-        self.redirect("/?text=" + answer)
-        #self.response.write(answer)
+        rot_answer = self.request.get("rot")
+        rotNum = int(rot_answer)
+        answer = encrypt(text_answer, rotNum)
+        form="""
+        <form method="post">
+            <div>
+                <label for="rot">Rotate by:</label>
+                <input type="text" name="rot" value="%s">
+            </div>
+            <textarea type="text" name="text" style="height: 50px; width: 200px;">%s</textarea>
+            <br>
+            <input type="submit">
+        </form>
+        """ % (rotNum, answer)
+        response = page_header + form + page_footer
+        self.response.write(response)
 
 
 app = webapp2.WSGIApplication([
